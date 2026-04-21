@@ -1,0 +1,7 @@
+spring.application.name=kafka_consumer
+
+spring.kafka.bootstrap-servers=192.168.0.51:29092,192.168.0.51:39092,192.168.0.51:49092
+spring.kafka.template.default-topic=kafka_spring
+
+spring.kafka.consumer.enable-auto-commit: true
+spring.kafka.consumer.auto-commit-interval: 1000ms
