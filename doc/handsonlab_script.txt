@@ -1,0 +1,121 @@
+#############################################
+## Chapter 1. Hands On Lab 소개
+#############################################
+
+
+
+
+#############################################
+## Chapter 2. Apache Kafka Quick Start
+#############################################
+
+
+
+#############################################
+## Chapter 3. Data Pipeline 구성
+#############################################
+
+
+cd /home/user/Desktop/materials/docker-elk
+
+# ELK 관련 초기 설정 수행
+sudo docker compose up setup
+
+    user@kafkaedu:~/Desktop/materials/docker-elk$ sudo docker compose up setup
+    [sudo] password for user: 
+    [+] up 1/1
+    ✔ Container docker-elk-setup-1 Created                                                                                                                                                                                                                  0.1s
+    Attaching to setup-1
+    setup-1  | [+] Waiting for availability of Elasticsearch. This can take several minutes.
+    setup-1  |    ⠿ Elasticsearch is running
+    setup-1  | [+] Waiting for initialization of built-in users
+    setup-1  |    ⠍ Timed out waiting for condition
+    setup-1 exited with code 1
+    user@kafkaedu:~/Desktop/materials/docker-elk$ 
+
+# ELK 실행
+sudo docker compose up
+
+# ELK 실행 결과 확인 (기존 KAKFA Container는 실행 되어 있어야 함)
+sudo docker pa
+
+    user@kafkaedu:~/Desktop/materials/docker-elk$ sudo docker ps
+    CONTAINER ID   IMAGE                      COMMAND                  CREATED          STATUS                 PORTS                                                                                                                                                                                        NAMES
+    0fcff0eb68a4   docker-elk-logstash        "/usr/local/bin/dock…"   57 seconds ago   Up 56 seconds          0.0.0.0:5044->5044/tcp, [::]:5044->5044/tcp, 0.0.0.0:9600->9600/tcp, [::]:9600->9600/tcp, 0.0.0.0:50000->50000/tcp, [::]:50000->50000/tcp, 0.0.0.0:50000->50000/udp, [::]:50000->50000/udp   docker-elk-logstash-1
+    3d11caae6896   docker-elk-kibana          "/bin/tini -- /usr/l…"   57 seconds ago   Up 56 seconds          0.0.0.0:5601->5601/tcp, [::]:5601->5601/tcp                                                                                                                                                  docker-elk-kibana-1
+    1165cd331f1f   docker-elk-elasticsearch   "/bin/tini -- /usr/l…"   57 seconds ago   Up 56 seconds          0.0.0.0:9200->9200/tcp, [::]:9200->9200/tcp, 0.0.0.0:9300->9300/tcp, [::]:9300->9300/tcp                                                                                                     docker-elk-elasticsearch-1
+    dd1dd118d321   tchiotludo/akhq            "docker-entrypoint.s…"   8 hours ago      Up 8 hours (healthy)   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp                                                                                                                                                  akhq
+    ba104d6033c8   apache/kafka:latest        "/__cacert_entrypoin…"   8 hours ago      Up 8 hours             0.0.0.0:29999->29999/tcp, [::]:29999->29999/tcp, 0.0.0.0:29092->9092/tcp, [::]:29092->9092/tcp                                                                                               broker-1
+    d26953595ada   apache/kafka:latest        "/__cacert_entrypoin…"   8 hours ago      Up 8 hours             0.0.0.0:49999->49999/tcp, [::]:49999->49999/tcp, 0.0.0.0:49092->9092/tcp, [::]:49092->9092/tcp                                                                                               broker-3
+    5a7a9f06ef3f   apache/kafka:latest        "/__cacert_entrypoin…"   8 hours ago      Up 8 hours             0.0.0.0:39999->39999/tcp, [::]:39999->39999/tcp, 0.0.0.0:39092->9092/tcp, [::]:39092->9092/tcp                                                                                               broker-2
+    eb8f50df6873   apache/kafka:latest        "/__cacert_entrypoin…"   8 hours ago      Up 8 hours             9092/tcp                                                                                                                                                                                     controller-1
+    e6796ec30384   apache/kafka:latest        "/__cacert_entrypoin…"   8 hours ago      Up 8 hours             9092/tcp                                                                                                                                                                                     controller-2
+    93d46317976b   apache/kafka:latest        "/__cacert_entrypoin…"   8 hours ago      Up 8 hours             9092/tcp                                                                                                                                                                                     controller-3
+
+
+#############################################
+## Chapter 4. Spring Boot 연동
+#############################################
+
+
+
+
+4-2) Kafka Streams
+
+bin/kafka-topics.sh --create \
+    --bootstrap-server localhost:29092 \
+    --replication-factor 1 \
+    --partitions 1 \
+    --topic streams-plaintext-input
+    
+    
+bin/kafka-topics.sh --create \
+    --bootstrap-server localhost:29092 \
+    --replication-factor 1 \
+    --partitions 1 \
+    --topic streams-wordcount-output \
+    --config cleanup.policy=compact
+    
+bin/kafka-topics.sh --bootstrap-server localhost:29092 --describe --exclude-internal
+
+
+bin/kafka-console-consumer.sh --bootstrap-server localhost:29092 \
+    --topic streams-wordcount-output \
+    --from-beginning \
+    --formatter-property print.key=true \
+    --formatter-property print.value=true \
+    --formatter-property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
+    --formatter-property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer        
+
+
+bin/kafka-console-consumer.sh --bootstrap-server localhost:29092 \
+    --topic streams-wordcount-output \
+    --formatter-property print.key=true \
+    --formatter-property print.value=true \
+    --formatter-property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
+    --formatter-property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer            
+
+
+#############################################
+## Chapter 5. Monitoring
+#############################################
+
+
+
+
+
+# KIBANA Dashboard 구성
+
+curl --user elastic:changeme -X POST "localhost:5601/api/saved_objects/_import" -H "kbn-xsrf: true" \
+    --form file=@kibana_object/kibana_kafka_dashboard.ndjson
+
+
+
+#############################################
+## Additional 1. Ubunu 설정 (24.04 기준)
+#############################################
+
+# root 계정 login 되도록 설정 - 아래 명령 수행 후 root password 설정
+sudo passwd root
+
+# 
