@@ -4,4 +4,4 @@ ARG ELASTIC_VERSION
 FROM docker.elastic.co/logstash/logstash:${ELASTIC_VERSION:-9.3.3}
 
 # Add your logstash plugins setup here
-RUN bin/logstash-plugin install logstash-input-jmx
+RUN logstash-plugin install logstash-input-jmx
